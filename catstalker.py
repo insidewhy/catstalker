@@ -5,9 +5,12 @@ import time
 import argparse
 
 def main():
-    parser = argparse.ArgumentParser(description='control energenie remote board')
-    parser.add_argument('-s', '--socket', type=int)
-    parser.add_argument('-o', '--off', action='store_true')
+    parser = argparse.ArgumentParser(
+        description='control energenie remote board for raspberry pi')
+    parser.add_argument('-s', '--socket', type=int,
+                        help='control specified socket from 1-4 (default = all)')
+    parser.add_argument('-o', '--off', action='store_true',
+                        help='turn socket(s) off (default is to turn on)')
     args = parser.parse_args()
 
     try:

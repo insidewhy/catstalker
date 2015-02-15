@@ -37,17 +37,17 @@ def main():
         GPIO.setup(22, GPIO.OUT)
 
         # Disable the modulator by setting CE pin lo
-        GPIO.output (22, False)
+        GPIO.output(22, False)
 
         # Set the modulator to ASK for On Off Keying
         # by setting MODSEL pin lo
-        GPIO.output (18, False)
+        GPIO.output(18, False)
 
         # Initialise K0-K3 inputs of the encoder to 0000
-        GPIO.output (PIN_1, False)
-        GPIO.output (PIN_0, False)
-        GPIO.output (ALL_PIN, False)
-        GPIO.output (PWR_PIN, False)
+        GPIO.output(PIN_1, False)
+        GPIO.output(PIN_0, False)
+        GPIO.output(ALL_PIN, False)
+        GPIO.output(PWR_PIN, False)
         time.sleep(0.25)
 
         pin_pwr = not args.off
@@ -64,17 +64,17 @@ def main():
         GPIO.cleanup()
 
 def set_output(pin1, pin0, pin_all, pin_pwr):
-    GPIO.output (PIN_1, pin1)
-    GPIO.output (PIN_0, pin0)
-    GPIO.output (ALL_PIN, not pin_all) # inverted
-    GPIO.output (PWR_PIN, pin_pwr)
+    GPIO.output(PIN_1, pin1)
+    GPIO.output(PIN_0, pin0)
+    GPIO.output(ALL_PIN, not pin_all) # inverted
+    GPIO.output(PWR_PIN, pin_pwr)
     # let it settle, encoder requires this
     time.sleep(0.1)
     # Enable the modulator
-    GPIO.output (22, True)
+    GPIO.output(22, True)
     # keep enabled for a period
     time.sleep(0.25)
     # Disable the modulator
-    GPIO.output (22, False)
+    GPIO.output(22, False)
 
 main()

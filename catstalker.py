@@ -4,6 +4,13 @@ import RPi.GPIO as GPIO
 import time
 import argparse
 
+# The binary [PIN_1, PIN_0] == ~(socket - 1)
+PIN_0 = 15
+PIN_1 = 11
+
+PWR_PIN = 13 # 1 == on, 0 == off
+ALL_PIN = 16 # 0 == all, 1 == socket count by PIN_1, PIN_0
+
 def main():
     parser = argparse.ArgumentParser(
         description='control energenie remote board for raspberry pi')
@@ -18,10 +25,10 @@ def main():
         GPIO.setmode(GPIO.BOARD)
 
         # Select the GPIO pins used for the encoder K0-K3 data inputs
-        GPIO.setup(11, GPIO.OUT)
-        GPIO.setup(15, GPIO.OUT)
-        GPIO.setup(16, GPIO.OUT)
-        GPIO.setup(13, GPIO.OUT)
+        GPIO.setup(PIN_1, GPIO.OUT)
+        GPIO.setup(PIN_0, GPIO.OUT)
+        GPIO.setup(ALL_PIN, GPIO.OUT)
+        GPIO.setup(PWR_PIN, GPIO.OUT)
 
         # Select the signal used to select ASK/FSK
         GPIO.setup(18, GPIO.OUT)
@@ -37,33 +44,18 @@ def main():
         GPIO.output (18, False)
 
         # Initialise K0-K3 inputs of the encoder to 0000
-        GPIO.output (11, False)
-        GPIO.output (15, False)
-        GPIO.output (16, False)
-        GPIO.output (13, False)
+        GPIO.output (PIN_1, False)
+        GPIO.output (PIN_0, False)
+        GPIO.output (ALL_PIN, False)
+        GPIO.output (PWR_PIN, False)
         time.sleep(0.25)
 
-        # socket on    off
-        # all    1011  0011
-        # 1      1111  0111
-        # 2      1110  0110
-        # 3      1101  0101
-        # 4      1100  0100
-        pin0 = not args.off
-        pin1 = True
-        pin2 = True
-        pin3 = True
+        pin_pwr = not args.off
+        pin_all = args.socket is None
+        pin0 = pin_all or (args.socket - 1) % 1 == 0
+        pin1 = pin_all or (args.socket - 1) % 2 == 0
 
-        if args.socket is None:
-            pin1 = False
-        elif args.socket == 2:
-            pin3 = False
-        elif args.socket == 3:
-            pin2 = False
-        elif args.socket == 4:
-            pin3 = pin2 = False
-
-        set_output(pin3, pin2, pin1, pin0)
+        set_output(pin1, pin0, pin_all, pin_pwr)
 
         GPIO.cleanup()
 
@@ -71,11 +63,11 @@ def main():
     except KeyboardInterrupt:
         GPIO.cleanup()
 
-def set_output(pin3, pin2, pin1, pin0):
-    GPIO.output (11, pin3)
-    GPIO.output (15, pin2)
-    GPIO.output (16, pin1)
-    GPIO.output (13, pin0)
+def set_output(pin1, pin0, pin_all, pin_pwr):
+    GPIO.output (PIN_1, pin1)
+    GPIO.output (PIN_0, pin0)
+    GPIO.output (ALL_PIN, not pin_all) # inverted
+    GPIO.output (PWR_PIN, pin_pwr)
     # let it settle, encoder requires this
     time.sleep(0.1)
     # Enable the modulator

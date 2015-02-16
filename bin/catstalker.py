@@ -52,8 +52,17 @@ def main():
 
         pin_pwr = not args.off
         pin_all = args.socket is None
-        pin0 = pin_all or (args.socket - 1) % 1 == 0
-        pin1 = pin_all or (args.socket - 1) % 2 == 0
+        pin0 = True
+        pin1 = True
+
+        if pin_all:
+            pass
+        elif args.socket == 2:
+            pin1 = False
+        elif args.socket == 3:
+            pin0 = False
+        elif args.socket == 4:
+            pin1 = pin0 = False
 
         set_output(pin1, pin0, pin_all, pin_pwr)
 

@@ -2,7 +2,7 @@ from distutils.core import setup
 
 setup(
     name='CatStalker',
-    version='0.0.1',
+    version='0.0.2',
     author='J. Pike',
     author_email='pip@chilon.net',
     scripts=['bin/catstalker.py'],
